@@ -1,34 +1,35 @@
 import asyncio
 import weatherbug_spark
-import sys
+import json
+
+def serialize_strike(strike):
+    return {
+        "latitude": strike.latitude,
+        "longitude": strike.longitude,
+        "timestamp": strike.dateTimeLocalStr,
+        # Remove "timestamp" or replace it with the correct attribute if available.
+    }
 
 async def main(lat, lon):
     data = await weatherbug_spark.get_data(lat=lat, lon=lon)
 
-    # Get the local lightning strike locations
-    print("Local Lightning Strike Locations: ", data.pulseListAlert)  # List of LightningStrike objects
+    if data.pulseListAlert:
+        print("Attributes of LightningStrike object:", dir(data.pulseListAlert[0]))
 
-    # Get the short message
-    print("Safety Message Short: ", data.shortMessage)  # Monitor Storms
+    pulseListAlert = [serialize_strike(strike) for strike in data.pulseListAlert]
 
-    # Get the long message
-    print("Safety Message Long: ", data.safetyMessage)  # You are not in immediate danger now, but stay alert and frequently check WeatherBug...
+    result = {
+        "pulseListAlert": pulseListAlert,
+        "shortMessage": data.shortMessage,
+        "safetyMessage": data.safetyMessage,
+        "alertColor": data.alertColor,
+        "closestPulseDistance": data.closestPulseDistance
+    }
 
-    # Get the hex code for the color of the alert
-    print("Alert Color: ", data.alertColor)  # #F0D701
-
-    # Get the closest strike distance
-    print("Closest Strike Distance: ", data.closestPulseDistance)  # float
+    print(json.dumps(result))
 
 if __name__ == "__main__":
-    # Ensure the user provided both latitude and longitude
-    if len(sys.argv) != 3:
-        print("Usage: py ./spark.py <LAT> <LONG>")
-        sys.exit(1)
-
-    # Parse command-line arguments
+    import sys
     lat = float(sys.argv[1])
     lon = float(sys.argv[2])
-
-    # Run the main async function
     asyncio.run(main(lat, lon))
