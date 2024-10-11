@@ -92,7 +92,7 @@ async function GetLocation(location) {
     return { latitude, longitude };
 }
 
-function GetLightning(lat, long) {
+/* function GetLightning(lat, long) {
     const { spawn } = require('child_process');
 
     return new Promise((resolve, reject) => {
@@ -122,6 +122,17 @@ function GetLightning(lat, long) {
             }
         });
     });
+} */
+
+async function GetLightning(lat, lon) {
+    try {
+        const response = await axios.get(`https://api.weather.daiki-bot.xyz/get-lightning-data?lat=${lat}&lon=${lon}`);
+        console.log(response.data); // Handle the response
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching lightning data:', error);
+        throw error;
+    }
 }
 
 async function getWeatherData(lat, long) {

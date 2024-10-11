@@ -6,6 +6,17 @@
             "use": "@now/node"
         }
     ],
+    "functions": {
+        "api/python/index.py": {
+            "runtime": "python3.9"
+        }
+    },
+    "rewrites": [
+        {
+            "source": "/get-lightning-data",
+            "destination": "/api/python/index.py"
+        }
+    ],
     "routes": [
         {
             "src": "/(.*)",
