@@ -1,5 +1,4 @@
 from flask import Flask, request, jsonify
-import asyncio
 import weatherbug_spark
 import json
 
@@ -12,9 +11,10 @@ def serialize_strike(strike):
         "timestamp": strike.dateTimeLocalStr,
     }
 
-async def main(lat, lon):
+def get_weather_data(lat, lon):
     try:
-        data = await weatherbug_spark.get_data(lat=lat, lon=lon)
+        # Instead of using asyncio, we directly call the method synchronously
+        data = weatherbug_spark.get_data_sync(lat=lat, lon=lon)
 
         pulseListAlert = [serialize_strike(strike) for strike in data.pulseListAlert]
 
@@ -35,14 +35,7 @@ def get_lightning_data():
     try:
         lat = float(request.args.get("lat"))
         lon = float(request.args.get("lon"))
-        try:
-            # Try to get the existing event loop, or create a new one if it doesn't exist
-            loop = asyncio.get_event_loop()
-        except RuntimeError:
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-
-        data = loop.run_until_complete(main(lat, lon))  # Run the async function
+        data = get_weather_data(lat, lon)  # No need for asyncio
         return jsonify(data)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
