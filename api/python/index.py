@@ -13,26 +13,34 @@ def serialize_strike(strike):
     }
 
 async def main(lat, lon):
-    data = await weatherbug_spark.get_data(lat=lat, lon=lon)
+    try:
+        data = await weatherbug_spark.get_data(lat=lat, lon=lon)
 
-    pulseListAlert = [serialize_strike(strike) for strike in data.pulseListAlert]
+        pulseListAlert = [serialize_strike(strike) for strike in data.pulseListAlert]
 
-    result = {
-        "pulseListAlert": pulseListAlert,
-        "shortMessage": data.shortMessage,
-        "safetyMessage": data.safetyMessage,
-        "alertColor": data.alertColor,
-        "closestPulseDistance": data.closestPulseDistance
-    }
+        result = {
+            "pulseListAlert": pulseListAlert,
+            "shortMessage": data.shortMessage,
+            "safetyMessage": data.safetyMessage,
+            "alertColor": data.alertColor,
+            "closestPulseDistance": data.closestPulseDistance
+        }
 
-    return result
+        return result
+    except Exception as e:
+        return {"error": str(e)}
 
 @app.route("/get-lightning-data", methods=["GET"])
 def get_lightning_data():
-    lat = float(request.args.get("lat"))
-    lon = float(request.args.get("lon"))
-    data = asyncio.run(main(lat, lon))
-    return jsonify(data)
+    try:
+        lat = float(request.args.get("lat"))
+        lon = float(request.args.get("lon"))
+        loop = asyncio.new_event_loop()  # Create a new event loop
+        asyncio.set_event_loop(loop)
+        data = loop.run_until_complete(main(lat, lon))  # Run the async function
+        return jsonify(data)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
