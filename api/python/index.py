@@ -35,8 +35,13 @@ def get_lightning_data():
     try:
         lat = float(request.args.get("lat"))
         lon = float(request.args.get("lon"))
-        loop = asyncio.new_event_loop()  # Create a new event loop
-        asyncio.set_event_loop(loop)
+        try:
+            # Try to get the existing event loop, or create a new one if it doesn't exist
+            loop = asyncio.get_event_loop()
+        except RuntimeError:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+
         data = loop.run_until_complete(main(lat, lon))  # Run the async function
         return jsonify(data)
     except Exception as e:
