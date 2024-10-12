@@ -1,9 +1,9 @@
-from flask import Flask, request, jsonify
+from quart import Quart, request, jsonify
 import asyncio
 import weatherbug_spark
 import json
 
-app = Flask(__name__)
+app = Quart(__name__)
 
 def serialize_strike(strike):
     return {
@@ -30,23 +30,12 @@ async def get_weather_data(lat, lon):
     except Exception as e:
         return {"error": str(e)}
 
-def run_event_loop(lat, lon):
-    # Ensure that we handle the event loop properly
-    try:
-        loop = asyncio.get_event_loop()  # Get the current event loop if it exists
-    except RuntimeError:
-        loop = asyncio.new_event_loop()  # Create a new one if none exists
-        asyncio.set_event_loop(loop)
-
-    data = loop.run_until_complete(get_weather_data(lat, lon))  # Run the async function
-    return data
-
 @app.route("/get-lightning-data", methods=["GET"])
-def get_lightning_data():
+async def get_lightning_data():
     try:
         lat = float(request.args.get("lat"))
         lon = float(request.args.get("lon"))
-        data = run_event_loop(lat, lon)  # Run the event loop
+        data = await get_weather_data(lat, lon)  # Async call with Quart
         return jsonify(data)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
