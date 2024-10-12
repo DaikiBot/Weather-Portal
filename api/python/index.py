@@ -1,4 +1,4 @@
-from quart import Quart, request, jsonify
+from quart import Quart, request, jsonify, Response
 import asyncio
 import weatherbug_spark
 import json
@@ -36,7 +36,9 @@ async def get_lightning_data():
         lat = float(request.args.get("lat"))
         lon = float(request.args.get("lon"))
         data = await get_weather_data(lat, lon)  # Async call with Quart
-        return jsonify(data)
+
+        # Return the response as JSON with the correct mimetype
+        return Response(json.dumps(data), mimetype='application/json')
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
