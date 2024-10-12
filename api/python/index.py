@@ -37,8 +37,11 @@ async def get_lightning_data():
         lon = float(request.args.get("lon"))
         data = await get_weather_data(lat, lon)  # Async call with Quart
 
-        # Return the response as JSON with the correct mimetype
-        return Response(json.dumps(data), mimetype='application/json')
+        # Force correct content-type and content-disposition
+        response = Response(json.dumps(data), mimetype='application/json')
+        response.headers['Content-Type'] = 'application/json; charset=utf-8'
+        response.headers['Content-Disposition'] = 'inline'  # This ensures it is not downloaded as a file
+        return response
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
