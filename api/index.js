@@ -24,7 +24,7 @@ app.set("view engine", "ejs");
 
 
 
-const APIroutes = require('./routes/route');
+const APIroutes = require('../routes/route');
 
 app.use('/api', APIroutes)
 
