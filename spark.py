@@ -1,4 +1,3 @@
-import asyncio
 import weatherbug_spark
 import json
 
@@ -7,11 +6,10 @@ def serialize_strike(strike):
         "latitude": strike.latitude,
         "longitude": strike.longitude,
         "timestamp": strike.dateTimeLocalStr,
-        # Remove "timestamp" or replace it with the correct attribute if available.
     }
 
-async def main(lat, lon):
-    data = await weatherbug_spark.get_data(lat=lat, lon=lon)
+def main(lat, lon):
+    data = weatherbug_spark.get_data_sync(lat=lat, lon=lon)  # Assuming `get_data_sync()` is the sync version
 
     if data.pulseListAlert:
         print("Attributes of LightningStrike object:", dir(data.pulseListAlert[0]))
@@ -32,4 +30,4 @@ if __name__ == "__main__":
     import sys
     lat = float(sys.argv[1])
     lon = float(sys.argv[2])
-    asyncio.run(main(lat, lon))
+    main(lat, lon)
