@@ -70,7 +70,7 @@ router.get(['/alert', '/alerts'], rateLimiter, async (req, res) => {
         const { latitude, longitude } = await GetLocation(location);
         const data = await getAlertData(latitude, longitude);
         res.json({
-            alerts: data.alerts
+            alerts: data.alerts.alert
         });
     } catch (error) {
         console.error(error);
@@ -78,7 +78,7 @@ router.get(['/alert', '/alerts'], rateLimiter, async (req, res) => {
     }
 })
 
-router.get(['/astronomy', 'astro'], rateLimiter, async (req, res) => {
+router.get(['/astronomy', '/astro'], rateLimiter, async (req, res) => {
     try {
         const location = req.query.location;
 
@@ -97,7 +97,7 @@ router.get(['/astronomy', 'astro'], rateLimiter, async (req, res) => {
     }
 })
 
-router.get(['/spark', 'lightning'], async (req, res) => {
+router.get(['/spark', '/lightning'], async (req, res) => {
     try {
         const location = req.query.location;
 
