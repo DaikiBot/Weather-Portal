@@ -22,7 +22,7 @@ const rateLimiter = rateLimit({
     message: 'Too many requests, please try again later.',
 });
 
-router.get('/forcast', rateLimiter, async (req, res) => {
+router.get(['/forcast', '/weather'], rateLimiter, async (req, res) => {
     try {
         const location = req.query.location;
 
@@ -39,7 +39,7 @@ router.get('/forcast', rateLimiter, async (req, res) => {
     }
 })
 
-router.get('/forcast/current', rateLimiter, async (req, res) => {
+router.get(['/forcast/current', '/current/weather', '/weather/current'], rateLimiter, async (req, res) => {
     try {
         const location = req.query.location;
 
@@ -59,7 +59,7 @@ router.get('/forcast/current', rateLimiter, async (req, res) => {
     }
 })
 
-router.get('/alert', rateLimiter, async (req, res) => {
+router.get(['/alert', '/alerts'], rateLimiter, async (req, res) => {
     try {
         const location = req.query.location;
 
@@ -78,7 +78,7 @@ router.get('/alert', rateLimiter, async (req, res) => {
     }
 })
 
-router.get('/astronomy', rateLimiter, async (req, res) => {
+router.get(['/astronomy', 'astro'], rateLimiter, async (req, res) => {
     try {
         const location = req.query.location;
 
@@ -97,7 +97,7 @@ router.get('/astronomy', rateLimiter, async (req, res) => {
     }
 })
 
-router.get('/spark', async (req, res) => {
+router.get(['/spark', 'lightning'], async (req, res) => {
     try {
         const location = req.query.location;
 
